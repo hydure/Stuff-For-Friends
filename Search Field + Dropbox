@@ -1,0 +1,38 @@
+html code snippet
+
+<input type="text" id="search" value="" />
+<br />
+<div id="suggestions">
+    <div id="field">Toronto</div>
+    <div id="field">Seattle</div>
+    <div id="field">Dallas</div>
+</div>
+
+
+javascript code snippet
+
+$('#search').focus(function() {
+    $('#suggestions').show();
+});
+$(document.body).click(function(e) {
+    if(e.target.id != 'search' && e.target.id != 'field') {
+        $('#suggestions').hide();
+    }
+});
+$('#suggestions div').click( function() {
+    $('#suggestions').stop(true,true).show();
+    $('#search').val($(this).html());
+});
+
+
+css code snippet
+
+#search, #suggestions { width: 200px; }
+#suggestions { 
+    display: none; 
+    border: 1px solid gray;
+    border-top: none;
+}
+#suggestions div:hover { 
+    background-color: #99CCFF; 
+}
