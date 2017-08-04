@@ -13,7 +13,7 @@
 					({{user.userName}})
 				</td>
 			</tr>
-		</table>
+		</table
 	</div>
 	<div id="noUserFound">No results found</div>
 </div>
@@ -23,8 +23,7 @@
 		// Keep search bar open unless click outside of drop down
 		if (e.target.id != 'userSearch' &amp;&amp; e.target.id != 'userField' &amp;&amp; 
 				e.target.id != 'userName' &amp;&amp; e.target.id != 'noUserFound') {
-			$('#userSearchResults').hide();
-			$('#noUserFound').hide();
+			$('#userSearchResults').hide();			$('#noUserFound').hide();
 		}
 	});
 									
@@ -65,8 +64,8 @@
 								<hr style="margin-top: 23px;" />
 							</div>
                             
-                            *
-	 * Function gets the top 10 results from the SailPoint context based on what the user types into
+        /*
+	 * Function gets the top 10 results from the database based on what the user types into
 	 * the search box. If nothing is typed in then no promise is used so there are no results.
 	 */
 	$scope.getSearchedUsers = function() {
