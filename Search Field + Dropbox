@@ -1,3 +1,129 @@
+<!-- Drop-down that populates with users -->
+								<div class="searchBar">
+									<input id="userSearch" placeholder="Search Identities" data-ng-model="searchUsers" data-ng-change="getSearchedUsers()" data-ng-focus="getSearchedUsers()"/>
+									<div id="userSearchResults" tabindex="-1" onclick="this.focus()">
+										<table style="width: inherit;">
+											<tr class="searchBarRow userIcon" id="$index" data-ng-style="userBackground($index)" data-ng-repeat="user in users" data-ng-click="addMember(user)"
+												data-ng-mouseover="setUser($index)">
+												<td id="userField">
+													{{user.displayName}}
+												</td>
+												<td id="userName">
+													({{user.userName}})
+												</td>
+											</tr>
+										</table>
+									</div>
+									<div id="noUserFound">No results found</div>
+								</div>
+								
+								<script>
+									$(document.body).on("click", function(e) {
+										// Keep search bar open unless click outside of drop down
+										if (e.target.id != 'userSearch' &amp;&amp; e.target.id != 'userField' &amp;&amp; e.target.id != 'userName' &amp;&amp; e.target.id != 'noUserFound') {
+											$('#userSearchResults').hide();
+											$('#noUserFound').hide();
+										}
+									});
+									
+									$('#userSearchResults div').click(function() {
+										angular.element(document.getElementById('listdata')).scope().stop(true, true).getSearchedUsers();
+										$('#userSearch').val($(this).html());
+									});
+									
+									$('#userSearch, #userSearchResults').on("keydown", function(event) {
+										var scope = angular.element(document.getElementById('listdata')).scope();
+										var usersLength = scope.users.length;
+										if (usersLength > 0) {
+											// Pressed 'Enter'
+											if (event.keyCode == 13) {
+												scope.addMember(scope.users[scope.userSearchIndex]);
+												scope.userTable.reload();
+											// Pressed up arrow
+											} else if (event.which == 38) {
+												event.preventDefault();
+												if(scope.userSearchIndex > 0) {
+													scope.userSearchIndex -= 1;
+												} else {
+													scope.userSearchIndex = usersLength - 1;
+												}
+											// Pressed down arrow
+											} else if (event.which == 40) {
+												event.preventDefault();
+												if (scope.userSearchIndex &lt; usersLength - 1) {
+													scope.userSearchIndex += 1;
+												} else {
+													scope.userSearchIndex = 0;
+												}
+											}
+										}
+										scope.$apply();
+									});
+								</script>
+								<hr style="margin-top: 23px;" />
+							</div>
+                            
+                            *
+	 * Function gets the top 10 results from the SailPoint context based on what the user types into
+	 * the search box. If nothing is typed in then no promise is used so there are no results.
+	 */
+	$scope.getSearchedUsers = function() {
+		$scope.userSearchIndex = 0;
+		
+		// Input typed into search box
+		if ($scope.searchUsers != "") {
+			var promise = appService.getSearchedUsers($scope.searchUsers);
+			promise.then(function(response) {
+				$scope.users = response.data;
+				
+				// Display top 10 users
+				if ($scope.users.length > 0) {
+					toggleDiv("userSearchResults", true);
+					toggleDiv("noUserFound", false);
+				// No users found
+				} else {
+					toggleDiv("userSearchResults", false);
+					toggleDiv("noUserFound", true);
+				}
+				
+			}, function(err) {
+				console.log("Error loading users data.", err);
+			});
+			
+		// No input typed into search box
+		} else {
+			$scope.users = [];
+			toggleDiv("userSearchResults", false);
+			toggleDiv("noUserFound", false);
+		}
+	}
+	
+	/*
+	 * This function colors the users in the list based on if they have been put into the user table or not.
+	 */
+	$scope.userBackground = function(index) {
+		// Highlighted user
+		if (index == $scope.userSearchIndex) {
+			return {
+				"background-color" : "#5897fb",
+				"color" : "#ffffff",
+			}
+		// Selected users greyed out
+		} else if ($scope.contains($scope.selectedUsers, $scope.users[index])) {
+			return {
+				"background-color" : "#e6e6e6",
+			}
+		}
+	}
+	
+	/*
+	 * This function sets the current index that the user is on in the dropdown results.
+	 */
+	$scope.setUser = function(index) {
+		$scope.userSearchIndex = index;
+		$scope.$apply;
+	}
+
 plunker: http://jsfiddle.net/9Yt9L/17/
 
 html code snippet
